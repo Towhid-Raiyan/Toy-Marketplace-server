@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
@@ -9,8 +10,23 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+const corsConfig = {
+  origin: "*",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: [
+    "Content-Type",
+    "Origin",
+    "X-Requested-With",
+    "Accept",
+    "x-client-key",
+    "x-client-token",
+    "x-client-secret",
+    "Authorization",
+  ],
+  credentials: true,
+};
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.cq8nopc.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -29,10 +45,14 @@ async function run() {
 
     const toysCollection = client.db('ToyMarketplace').collection('Toys');
 
-    app.get('/toys',async(req,res)=>{
-      const cursor = toysCollection.find();
-      const result = await cursor.toArray();
-      res.send(result);
+    app.get('/toys', async (req, res) => {
+      let query = {};
+      if (req.query.name) {
+        query = { ToyName: req.query.name };
+      }
+      const cursor = toysCollection.find(query).limit(20);
+      const toys = await cursor.toArray();
+      res.send(toys);
     })
 
 
@@ -49,10 +69,10 @@ async function run() {
 run().catch(console.dir);
 
 
-app.get('/',(req,res)=>{
-    res.send('Toy Marketplace is running');
+app.get('/', (req, res) => {
+  res.send('Toy Marketplace is running');
 })
 
-app.listen(port,()=>{
-    console.log(`Toy market place is running on port : ${port}`);
+app.listen(port, () => {
+  console.log(`Toy market place is running on port : ${port}`);
 })
