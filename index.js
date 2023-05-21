@@ -70,7 +70,7 @@ async function run() {
     app.delete("/mytoys/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
-      const result = await toyCollection.deleteOne(query);
+      const result = await toysCollection.deleteOne(query);
       res.send(result);
     });
 
@@ -78,7 +78,7 @@ async function run() {
     app.get("/toy/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
-      const result = await toyCollection.findOne(query);
+      const result = await toysCollection.findOne(query);
       res.send(result);
     });
     // edit a toy
@@ -87,39 +87,39 @@ async function run() {
       console.log(id);
       const filter = { _id: new ObjectId(id) };
       const {
-        PictureUrl,
-        ToyName,
+        picture,
+        name,
         SellerName,
         SellerEmail,
-        Price,
-        Quantity,
-        Rating,
-        Description,
-        Category,
+        price,
+        quantity,
+        rating,
+        description,
+        subcategory,
       } = req.body;
       const updateDoc = {
         $set: {
-          PictureUrl,
-          ToyName,
-          SellerName,
-          SellerEmail,
-          Price,
-          Quantity,
-          Rating,
-          Description,
-          Category,
+        picture,
+        name,
+        SellerName,
+        SellerEmail,
+        price,
+        quantity,
+        rating,
+        description,
+        subcategory,
         },
       };
       console.log("hitted ", id);
-      const result = await toyCollection.updateOne(filter, updateDoc);
+      const result = await toysCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
-    
+
     // add a toy
     app.post("/addtoy", async (req, res) => {
       const toy = req.body;
       console.log(toy);
-      const result = await toyCollection.insertOne(toy);
+      const result = await toysCollection.insertOne(toy);
       res.send(result);
   });
 
@@ -135,9 +135,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-  res.send('Toy Marketplace is running');
+  res.send('Toy Marketplace is Running...');
 })
 
 app.listen(port, () => {
-  console.log(`Toy market place is running on port : ${port}`);
+  console.log(`Toy market place is Running on port : ${port}`);
 })
