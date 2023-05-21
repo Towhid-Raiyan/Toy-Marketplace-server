@@ -64,7 +64,15 @@ async function run() {
       const cursor = toysCollection.find(query).limit(6); //don't need to display all product on home page
       const toys = await cursor.toArray();
       res.send(toys);
-  });
+    });
+
+    // delete my toy
+    app.delete("/mytoys/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await toyCollection.deleteOne(query);
+      res.send(result);
+    });
 
 
 
