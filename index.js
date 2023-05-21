@@ -45,6 +45,7 @@ async function run() {
 
     const toysCollection = client.db('ToyMarketplace').collection('Toys');
 
+    // get toys
     app.get('/toys', async (req, res) => {
       let query = {};
       if (req.query.name) {
@@ -55,6 +56,15 @@ async function run() {
       res.send(toys);
     })
 
+    // get toys on tab (categorical data load)
+    app.get("/toys/:category", async (req, res) => {
+      const category = req.params.category;
+      console.log(category);
+      query = { Category: category };
+      const cursor = toysCollection.find(query).limit(6); //don't need to display all product on home page
+      const toys = await cursor.toArray();
+      res.send(toys);
+  });
 
 
 
