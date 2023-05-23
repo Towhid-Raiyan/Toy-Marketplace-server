@@ -49,22 +49,46 @@ async function run() {
     app.get('/toys', async (req, res) => {
       let query = {};
       if (req.query.name) {
-        query = { ToyName: req.query.name };
+        query = { name: req.query.name };
       }
       const cursor = toysCollection.find(query).limit(20);
       const toys = await cursor.toArray();
       res.send(toys);
     })
-
+    
     // get toys on tab (categorical data load)
-    app.get("/toys/:category", async (req, res) => {
-      const category = req.params.category;
-      console.log(category);
-      query = { Category: category };
-      const cursor = toysCollection.find(query).limit(6); //don't need to display all product on home page
+    app.get("/toys/:subcategory", async (req, res) => {
+      const subcategory = req.params.subcategory;
+      console.log(subcategory);
+      query = { subcategory: subcategory };
+      const cursor = toysCollection.find(query).limit(3); //displaying 3  product on home page
       const toys = await cursor.toArray();
+      
       res.send(toys);
     });
+ 
+    // mytoys
+    app.get("/mytoys", async (req, res) => {
+      const query = { SellerEmail: req.query.email };
+      const sortType = req.query.sort;
+      console.log(sortType);
+      if (sortType == "asc") {
+          const cursor = await toysCollection
+              .find(query)
+              .sort({ price: 1 }) //for ascending order
+              .toArray();
+          return res.send(cursor);
+      } else if (sortType == "desc") {
+          const cursor = await toysCollection
+              .find(query)
+              .sort({ price: -1 }) //for descending order
+              .toArray();
+          return res.send(cursor);
+      } else {
+          const cursor = await toysCollection.find(query).toArray();
+          return res.send(cursor);
+      }
+  });
 
     // delete my toy
     app.delete("/mytoys/:id", async (req, res) => {
